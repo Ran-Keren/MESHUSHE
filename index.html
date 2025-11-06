@@ -43,17 +43,37 @@
     .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.6);cursor:pointer}
     .dot.active{background:var(--accent)}
 
-    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;overflow-y: auto;} /* Added overflow-y: auto for scrolling on small screens */
     .modal.show{display:flex}
-    .modal-content{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
-    .modal h2{margin:0 0 15px;color:var(--accent)}
+    .modal-content{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:right;box-shadow:0 20px 60px rgba(0,0,0,0.3); margin: 50px 0;} /* Added margin for space */
+    .modal h2{margin:0 0 15px;color:var(--accent); text-align: center;}
     .modal p{margin:10px 0;line-height:1.6}
-    .modal-buttons{display:flex;gap:10px;margin-top:20px;justify-content:center}
+    .modal-buttons{display:flex;gap:10px;margin-top:20px;justify-content:center; flex-wrap: wrap;}
     .close-modal{background:#ddd;color:#333}
     .close-modal:hover{background:#ccc}
 
-    textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box}
+    textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box; text-align: right;} /* RTL for textarea */
     select{width:70px;padding:5px;border-radius:6px;border:1px solid #ccc;font-size:14px;text-align:center;cursor:pointer}
+
+    /* --- New Styles for Form Inputs --- */
+    .form-group{margin-bottom: 15px; text-align: right;}
+    .form-group label{display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px;}
+    .form-group input{
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+      direction: rtl; /* Ensure Hebrew input is correct */
+      text-align: right;
+    }
+    /* Specific LTR for fields that should be LTR (like email, phone) */
+    .form-group input[type="email"], 
+    .form-group input[type="tel"] {
+      direction: ltr; 
+      text-align: left;
+    }
 
     @media (max-width:900px){
       .card{flex-direction:column-reverse}
@@ -114,6 +134,7 @@
           <div class="slides" id="slides">
             <div class="slide"><img alt="תמונה 1" src="https://i.imgur.com/jjZr714.jpeg"/></div>
             <div class="slide"><img alt="תמונה 2" src="https://i.imgur.com/gZb3J4v.jpeg"/></div>
+            <div class="slide"><img alt="תמונה 3" src="https://i.imgur.com/Zq4aYCR.jpeg"/></div>
           </div>
         </div>
 
@@ -129,15 +150,51 @@
     </div>
   </div>
 
-  <!-- Modal for payment instructions -->
+  <div class="modal" id="shippingModal">
+    <div class="modal-content">
+      <h2>פרטי משלוח וקשר 📦</h2>
+      <p>אנא מלאו את הפרטים לקבלת הספר והמשלוח:</p>
+      
+      <div class="form-group">
+        <label for="shippingName">שם מלא</label>
+        <input type="text" id="shippingName" required placeholder="שם ושם משפחה">
+      </div>
+      
+      <div class="form-group">
+        <label for="shippingPhone">טלפון</label>
+        <input type="tel" id="shippingPhone" required placeholder="05X-XXXXXXX">
+      </div>
+      
+      <div class="form-group">
+        <label for="shippingEmail">דוא"ל</label>
+        <input type="email" id="shippingEmail" required placeholder="example@mail.com">
+      </div>
+
+      <div class="form-group">
+        <label for="shippingCity">עיר</label>
+        <input type="text" id="shippingCity" required placeholder="לדוגמה: תל אביב">
+      </div>
+      
+      <div class="form-group">
+        <label for="shippingAddress">כתובת מלאה</label>
+        <input type="text" id="shippingAddress" required placeholder="רחוב, מספר בית, דירה">
+      </div>
+      
+      <div class="modal-buttons">
+        <button class="btn" id="continueToPaymentBtn">המשך לתשלום</button>
+        <button class="btn close-modal" data-modal="shippingModal">ביטול</button>
+      </div>
+    </div>
+  </div>
+  
   <div class="modal" id="paymentModal">
     <div class="modal-content">
-      <h2>תשלום דרך Bit</h2>
-      <p><strong>סכום לתשלום: ₪64</strong></p>
+      <h2 id="paymentModalTitle">תשלום דרך Bit</h2>
+      <p><strong>סכום לתשלום: <span id="paymentTotalAmount">₪64</span></strong></p>
       <p>אנא בחר/י את אפשרות התשלום:</p>
       <div class="modal-buttons">
         <button class="btn" id="openBitApp">פתח את Bit</button>
-        <button class="btn close-modal" id="closeModal">ביטול</button>
+        <button class="btn close-modal" data-modal="paymentModal">ביטול</button>
       </div>
       <p style="font-size:14px;margin-top:15px;color:#666">
         לאחר התשלום, אנא שמור/י את אישור העסקה ושלח/י אותו לכתובת המייל שלנו.
@@ -149,27 +206,32 @@
     const PRICE_PER_BOOK = 64;
     const copiesInput = document.getElementById('copies');
     const totalPriceEl = document.getElementById('totalPrice');
+    
+    // Updated Elements
+    const payBtn = document.getElementById('payBtn');
+    const shippingModal = document.getElementById('shippingModal');
+    const continueToPaymentBtn = document.getElementById('continueToPaymentBtn');
+    const paymentModal = document.getElementById('paymentModal');
+    const paymentTotalAmount = document.getElementById('paymentTotalAmount');
 
     function updateTotal() {
       const quantity = parseInt(copiesInput.value) || 1;
-      totalPriceEl.textContent = `₪${PRICE_PER_BOOK * quantity}`;
+      const total = PRICE_PER_BOOK * quantity;
+      totalPriceEl.textContent = `₪${total}`;
+      paymentTotalAmount.textContent = `₪${total}`; // Update payment modal price
     }
 
     copiesInput.addEventListener('change', updateTotal);
     updateTotal(); // initialize
 
-    // Carousel
+    // --- Carousel Logic (Kept as is for functionality) ---
     (function(){
       const slidesEl = document.getElementById('slides');
       const slides = Array.from(slidesEl.children);
       const dotsEl = document.getElementById('dots');
       const prev = document.getElementById('prev');
       const next = document.getElementById('next');
-      const payBtn = document.getElementById('payBtn');
       const moreBtn = document.getElementById('moreBtn');
-      const modal = document.getElementById('paymentModal');
-      const closeModal = document.getElementById('closeModal');
-      const openBitApp = document.getElementById('openBitApp');
       
       let index = 0;
       const intervalMs = 3000;
@@ -209,19 +271,85 @@
 
       document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowLeft'){ nextSlide(); resetTimer(); } if(e.key==='ArrowRight'){ prevSlide(); resetTimer(); } });
 
-      // Payment
-      payBtn.addEventListener('click', ()=>{ modal.classList.add('show'); });
-      closeModal.addEventListener('click', ()=>{ modal.classList.remove('show'); });
-      modal.addEventListener('click', (e)=>{ if(e.target === modal){ modal.classList.remove('show'); } });
+      // --- NEW/UPDATED Modal and Payment Logic ---
+      
+      // Function to close a modal
+      function closeModal(modalElement) {
+        modalElement.classList.remove('show');
+      }
+
+      // Open Shipping Modal
+      payBtn.addEventListener('click', ()=>{ 
+        updateTotal(); // Make sure price is up-to-date
+        shippingModal.classList.add('show'); 
+      });
+
+      // Handle 'Continue to Payment' button
+      continueToPaymentBtn.addEventListener('click', (e)=>{
+        // Basic Form Validation (check if required fields are filled)
+        const name = document.getElementById('shippingName').value.trim();
+        const phone = document.getElementById('shippingPhone').value.trim();
+        const email = document.getElementById('shippingEmail').value.trim();
+        const city = document.getElementById('shippingCity').value.trim();
+        const address = document.getElementById('shippingAddress').value.trim();
+        
+        if (!name || !phone || !email || !city || !address) {
+            alert('אנא מלאו את כל פרטי המשלוח הנדרשים.');
+            return;
+        }
+
+        // 1. Hide Shipping Modal
+        closeModal(shippingModal);
+        
+        // 2. Log Data (For actual use, you'd send this to your server/CRM)
+        console.log('--- Shipping Details ---');
+        console.log('Name:', name);
+        console.log('Phone:', phone);
+        console.log('Email:', email);
+        console.log('City:', city);
+        console.log('Address:', address);
+        console.log('Copies:', copiesInput.value);
+        console.log('Dedication:', document.getElementById('dedication').value);
+        console.log('Total Price:', totalPriceEl.textContent);
+        console.log('------------------------');
+
+
+        // 3. Show Payment Modal
+        paymentModal.classList.add('show');
+      });
+
+
+      // Close Modals using the 'ביטול' buttons or outside click
+      document.querySelectorAll('.close-modal').forEach(button => {
+          button.addEventListener('click', () => {
+              const modalId = button.dataset.modal || (button.closest('.modal') ? button.closest('.modal').id : null);
+              if (modalId) {
+                  closeModal(document.getElementById(modalId));
+              }
+          });
+      });
+
+      document.querySelectorAll('.modal').forEach(modal => {
+          modal.addEventListener('click', (e) => { 
+              if(e.target === modal){ 
+                  closeModal(modal);
+              } 
+          });
+      });
+      
+
+      // Payment logic (kept as is)
+      const openBitApp = document.getElementById('openBitApp');
       openBitApp.addEventListener('click', ()=>{
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const bitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
         if(isMobile){
-          window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
-          setTimeout(()=>{ window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D'; }, 1500);
+          window.location.href = bitUrl;
+          setTimeout(()=>{ window.location.href = bitUrl; }, 1500);
         } else {
-          window.open('https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D', '_blank');
+          window.open(bitUrl, '_blank');
         }
-        modal.classList.remove('show');
+        closeModal(paymentModal);
       });
 
       moreBtn.addEventListener('click', ()=>{ alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.'); });
@@ -231,4 +359,3 @@
   </script>
 </body>
 </html>
-
