@@ -336,26 +336,24 @@
       paymentModal.classList.add('show');
     });
 
-    // Handle 'Open Bit' button (Trigger Email Send AND Payment Link)
     openBitApp.addEventListener('click', ()=>{
-        // 1. Trigger the Email Send (using the data saved in currentOrderData)
+        // 1. Trigger the Email Send
         sendOrderEmail(); 
-        
-        // 2. Open Bit App/Link
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        // 2. Delay Bit redirection slightly to allow EmailJS to finish
         const bitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
-        if(isMobile){
-          // Try to open the app directly
-          window.location.href = bitUrl;
-          // As a fallback, try again after a short delay
-          setTimeout(()=>{ window.location.href = bitUrl; }, 1500);
-        } else {
-          window.open(bitUrl, '_blank');
-        }
-        
-        // 3. Close the modal after action
-        closeModal(paymentModal);
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        setTimeout(() => {
+            if (isMobile) {
+                window.location.href = bitUrl;
+            } else {
+                window.open(bitUrl, '_blank');
+            }
+            closeModal(paymentModal);
+        }, 1200); // 1.2 second delay
     });
+
 
     // Close Modals using the 'ביטול' buttons or outside click
     document.querySelectorAll('.close-modal').forEach(button => {
