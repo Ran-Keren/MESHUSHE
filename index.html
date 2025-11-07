@@ -203,7 +203,7 @@
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   
   <script>
-    // 🛑 STEP 1: Replace 'YOUR_USER_ID' with your actual EmailJS User ID
+    // Initialize EmailJS with your User ID
     emailjs.init('z-eaCzzxfo-aNi7OX'); 
 
     const PRICE_PER_BOOK = 64;
@@ -217,7 +217,7 @@
     const paymentModal = document.getElementById('paymentModal');
     const paymentTotalAmount = document.getElementById('paymentTotalAmount');
     const moreBtn = document.getElementById('moreBtn');
-    const openBitApp = document.getElementById('openBitApp'); // The button that triggers the email send and the payment link
+    const openBitApp = document.getElementById('openBitApp');
 
     // Global variable to store order details for EmailJS
     let currentOrderData = {};
@@ -233,14 +233,17 @@
       modalElement.classList.remove('show');
     }
 
-    // --- Email Sending Function ---
-    function sendOrderEmail() {
+    // --- FIXED: Email Sending Function with Redirect ---
+    function sendEmailAndRedirect(bitUrl, isMobile) {
         if (Object.keys(currentOrderData).length === 0) {
             console.error('Error: No order data available for email sending.');
+            alert('❌ שגיאה בפרטי ההזמנה');
+            openBitApp.disabled = false;
+            openBitApp.textContent = 'פתח את Bit';
             return;
         }
 
-        // 🛑 STEP 2: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
+        // Send email using EmailJS
         emailjs.send('service_cprtcca', 'template_50ax085', {
             to_email: 'ranktk@gmail.com',
             name: currentOrderData.name,
@@ -251,14 +254,32 @@
             dedication: currentOrderData.dedication,
             copies: currentOrderData.copies,
             total: currentOrderData.totalPrice 
-        })
+        }).then(() => {
+            console.log('SUCCESS! Email sent to ranktk@gmail.com');
+            
+            // Email sent successfully - now redirect to Bit
+            closeModal(paymentModal);
+            if (isMobile) {
+                window.location.href = bitUrl;
+            } else {
+                window.open(bitUrl, '_blank');
+                alert('✅ פרטי ההזמנה נשלחו בהצלחה! חלון Bit נפתח.');
+            }
+        }).catch(err => {
+            console.error('EmailJS Error - Could not send email:', err);
+            alert('❌ שגיאה בשליחת המייל עם פרטי ההזמנה. אנא שלח/י את הפרטים ידנית ל-ranktk@gmail.com');
+            
+            // Re-enable button
+            openBitApp.disabled = false;
+            openBitApp.textContent = 'פתח את Bit';
+        });
     }
 
     // --- Event Listeners and Logic ---
     copiesInput.addEventListener('change', updateTotal);
     updateTotal(); 
 
-    // Carousel Logic (kept for completeness)
+    // Carousel Logic
     (function(){
         const slidesEl = document.getElementById('slides');
         const slides = Array.from(slidesEl.children);
@@ -330,24 +351,24 @@
       paymentModal.classList.add('show');
     });
 
+    // FIXED: Handle Bit Payment Button Click
     openBitApp.addEventListener('click', ()=>{
-        // 1. Trigger the Email Send
-        sendOrderEmail(); 
-
-        // 2. Delay Bit redirection slightly to allow EmailJS to finish
-        const bitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
+        const quantity = parseInt(copiesInput.value) || 1;
+        const total = PRICE_PER_BOOK * quantity;
+        
+        // Build Bit URL with amount parameter
+        const bitBaseUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
+        const bitUrl = `${bitBaseUrl}?amount=${total}`;
+        
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-        setTimeout(() => {
-            if (isMobile) {
-                window.location.href = bitUrl;
-            } else {
-                window.open(bitUrl, '_blank');
-            }
-            closeModal(paymentModal);
-        }, 2200); // 1.2 second delay
+        
+        // Disable button during send
+        openBitApp.disabled = true;
+        openBitApp.textContent = 'שולח פרטים...';
+        
+        // Send email and WAIT for it to complete before redirecting
+        sendEmailAndRedirect(bitUrl, isMobile);
     });
-
 
     // Close Modals using the 'ביטול' buttons or outside click
     document.querySelectorAll('.close-modal').forEach(button => {
@@ -371,4 +392,3 @@
   </script>
 </body>
 </html>
-
