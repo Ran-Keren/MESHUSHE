@@ -115,7 +115,7 @@
 
         <blockquote>ספר עם הומור ורגש – שעושה סדר בגאומטריה של הלב.</blockquote>
 
-        <p><strong>מה עכשיו?</strong><br>בחרו את מספר העותקים, הוסיפו הקדשה (אם תרצו),<br>ואנחנו נדאג שהוא יגיע ארוז באהבה – מוכן לרגש.</p>
+        <p><strong>מה עכשיו?</strong><br>בחרו את מספר העותקים,<br>ואנחנו נדאג שהוא יגיע ארוז באהבה – מוכן לרגש.</p>
         <label for="copies">מספר עותקים:</label>
         <select id="copies">
           <option value="1">1</option>
@@ -139,9 +139,6 @@
           <option value="19">19</option>
           <option value="20">20</option>
         </select>
-
-        <p><strong>רוצים לצרף מילה אישית?</strong><br>כתבו כאן הקדשה – ואנחנו נדפיס אותה ממש בתוך הספר 💌</p>
-        <textarea id="dedication" rows="3" placeholder="הקלידו כאן את ההקדשה שלכם..."></textarea>
 
         <div class="cta">
           <div class="price" id="totalPrice">₪64</div>
@@ -271,14 +268,14 @@
             email: currentOrderData.email,
             city: currentOrderData.city,
             address: currentOrderData.address,
-            dedication: currentOrderData.dedication,
+            // dedication is removed
             copies: currentOrderData.copies,
             total: currentOrderData.totalPrice 
         })
         .then(function(response) {
-           console.log('SUCCESS!', response.status, response.text);
+            console.log('SUCCESS!', response.status, response.text);
         }, function(error) {
-           console.log('FAILED...', error);
+            console.log('FAILED...', error);
         });
     }
 
@@ -341,7 +338,7 @@
       const email = document.getElementById('shippingEmail').value.trim();
       const city = document.getElementById('shippingCity').value.trim();
       const address = document.getElementById('shippingAddress').value.trim();
-      const dedication = document.getElementById('dedication').value;
+      // const dedication = document.getElementById('dedication').value; // REMOVED
       const copies = copiesInput.value;
       const totalPrice = paymentTotalAmount.textContent;
       
@@ -350,8 +347,8 @@
           return;
       }
       
-      // Store validated data
-      currentOrderData = { name, phone, email, city, address, dedication, copies, totalPrice };
+      // Store validated data (Dedication removed from data)
+      currentOrderData = { name, phone, email, city, address, copies, totalPrice, dedication: "לא נבחרה הקדשה אישית" }; // Adding a default/placeholder for the email template
 
       // Hide Shipping Modal and Show Payment Modal
       closeModal(shippingModal);
@@ -399,10 +396,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
