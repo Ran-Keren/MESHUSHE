@@ -495,13 +495,11 @@
         const currentAmountText = paymentTotalAmount.textContent.replace('₪', '').trim();
         const currentAmount = parseFloat(currentAmountText);
         
-        // כתובת ה-Bit הבסיסית (בלי סכום)
         const baseBitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
         
-        // יצירת הלינק המלא עם הפרמטר amount
-        const bitUrl = `${baseBitUrl}?amount=${currentAmount}`;
-        // --------------------------------------------------
-        
+        // לינק Bit תקין עם סכום
+        const bitUrl = `${baseBitUrl}?v=1&source=other&sum=${currentAmount}`;
+
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         setTimeout(() => {
@@ -537,3 +535,4 @@
   </script>
 </body>
 </html>
+
