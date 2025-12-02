@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ספר — מצגת תמונות + כפתור קנייה</title>
+  <title>ספר – מצגת תמונות + כפתור קנייה</title>
   <style>
     :root{--gap:18px;--accent:#e94e77;--bg:#e0f2f7; --text:#222; --success: #28a745; --error: #dc3545;}
     html,body{
@@ -158,11 +158,11 @@
 
         <p class="pink-text">מתאים כמתנה לילד, להורה, לצוות חינוכי, והכי חשוב – לעצמך ❤️</p>
         
-        <p class="pink-text">זה הזמן להודות לאדם הזה בחיים שלך –<br>
-        מחנכ/ת, גננ/ת, חבר/ה או כל דמות שהאמינה, חיזקה ועודדה –<br>
-        הספר הזה הוא הדרך הכי מרגשת להגיד תודה.</p>
+        <p class="pink-text">זה הזמן להודות לאדם הזה בחייך שלך –<br>
+        מחנכ/ת, גנן/ת, חבר/ה או כל דמות שהאמינה, חיזקה ועודדה –<br>
+        הספר הזה הוא הדרך הכי מרגשת להביע תודה.</p>
 
-        <p>משושה לא מרוצה הוא ספר ילדים ששם במרכזו את הקשר בין מבוגר משמעותי לדימוי העצמי של הילד, ויוצר פתח לשיח רגשי.<br>
+        <p>משושה לא מרוצה הוא ספר ילדים שושם במרכזו את הקשר בין מבוגר משמעותי לדימוי העצמי של הילד, ויוצר פתח לשיח רגשי.<br>
         הוא גם כלי דידקטי ללימוד צורות – ולהבנה שכל צורה בטבע יש לה תפקיד וחשיבות.</p>
 
         <p class="lead">כי זה מדעי – לכל צורה יש סיבה, זה ממש לא מקרי.</p>
@@ -249,13 +249,13 @@
       </div>
       
       <div class="form-group">
-        <label for="shippingEmail">דוא"ל</label>
+        <label for="shippingEmail">דואל</label>
         <input type="email" id="shippingEmail" required placeholder="example@mail.com">
       </div>
 
       <div class="form-group">
         <label for="shippingCity">עיר</label>
-        <input type="text" id="shippingCity" required placeholder="לדוגמה: תל אביב">
+        <input type="text" id="shippingCity" required placeholder="לדוגמא: תל אביב">
       </div>
       
       <div class="form-group">
@@ -288,18 +288,19 @@
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   
   <script>
-    // 🛑 STEP 1: Replace 'YOUR_USER_ID' with your actual EmailJS User ID
+    // 🛒 STEP 1: Replace 'YOUR_USER_ID' with your actual EmailJS User ID
     emailjs.init('P5NmDjpFs_fgKFY9I'); 
 
     const PRICE_PER_BOOK = 64;
     
     // --- Coupon Logic Variables ---
+    // הגדרת קודי הקופון וההנחות שלהם
     const COUPONS = {
         'TALYA20': 0.20, // 20% discount
         'TALYA10': 0.10  // 10% discount
     };
     let isDiscountApplied = false;
-    let discountRate = 0; 
+    let discountRate = 0; // The active discount rate
 
     const copiesInput = document.getElementById('copies');
     const totalPriceEl = document.getElementById('totalPrice');
@@ -326,12 +327,14 @@
       const quantity = parseInt(copiesInput.value) || 1;
       let total = PRICE_PER_BOOK * quantity;
       
+      // If discount is active, calculate new price
       if (isDiscountApplied) {
           const originalTotal = total;
           
+          // Apply discount
           total = total * (1 - discountRate);
 
-          // Round to the nearest integer
+          // ROUNDING CHANGE: Round to the nearest integer
           total = Math.round(total); 
           
           oldPriceEl.textContent = `₪${originalTotal}`;
@@ -348,15 +351,17 @@
     function applyCoupon() {
         const inputCode = couponInput.value.trim().toUpperCase();
         
+        // Check if the input code exists in the COUPONS object
         if (COUPONS.hasOwnProperty(inputCode)) {
             if (!isDiscountApplied) {
                 isDiscountApplied = true;
-                discountRate = COUPONS[inputCode]; 
+                discountRate = COUPONS[inputCode]; // Set the discount rate from the map
                 const discountPercent = discountRate * 100;
 
                 couponMsg.textContent = `הקופון הופעל בהצלחה! (${discountPercent}% הנחה)`;
                 couponMsg.className = "coupon-msg success";
                 
+                // Disable input
                 couponInput.disabled = true; 
                 applyCouponBtn.disabled = true;
                 applyCouponBtn.textContent = "V";
@@ -382,7 +387,7 @@
             return;
         }
 
-        // 🛑 STEP 2: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
+        // 🛒 STEP 2: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
         emailjs.send('service_cprtcca', 'template_50ax085', {
             to_email: 'talyaasban@gmail.com', 
             name: currentOrderData.name,
@@ -403,8 +408,10 @@
     // --- Event Listeners and Logic ---
     copiesInput.addEventListener('change', updateTotal);
     
+    // Listen for Coupon Click
     applyCouponBtn.addEventListener('click', applyCoupon);
     
+    // Allow pressing Enter in coupon field
     couponInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             applyCoupon();
@@ -488,18 +495,11 @@
         // 1. Trigger the Email Send
         sendOrderEmail(); 
 
-        // 2. Delay Bit redirection slightly to allow EmailJS to finish
+        // 2. Calculate the total amount (remove ₪ symbol and get numeric value)
+        const totalAmount = paymentTotalAmount.textContent.replace('₪', '').trim();
         
-        // --- שינוי: בניית URL דינמי עם הסכום הנוכחי ---
-        // משיכת הסכום הנוכחי מהתצוגה (ללא ה'₪')
-        const currentAmountText = paymentTotalAmount.textContent.replace('₪', '').trim();
-        const currentAmount = parseFloat(currentAmountText);
-        
-        const baseBitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
-        
-        // לינק Bit תקין עם סכום
-        const bitUrl = `${baseBitUrl}?v=1&source=other&sum=${currentAmount}`;
-
+        // 3. Build Bit URL with amount parameter
+        const bitUrl = `https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D?amount=${totalAmount}`;
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         setTimeout(() => {
@@ -535,4 +535,3 @@
   </script>
 </body>
 </html>
-
